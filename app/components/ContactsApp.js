@@ -1,15 +1,29 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import fetch from 'isomorphic-fetch';
 import ContactList from './ContactList';
 import SearchBar from './SearchBar';
 
 
 export default class ContactsApp extends Component {
+    static requestInitialData() {
+        return fetch('http://localhost:3000/contacts.json')
+            .then((response) => response.json());
+    };
+
     constructor() {
         super(...arguments);
         this.state = {
             contacts: this.props.initialData || [],
             filterText: ''
+        }
+    }
+
+    componentDidMount(){
+        if (!this.props.initialData) {
+            ContactsApp.requestInitialData().then(contacts => {
+                this.setState({ contacts });
+            });
         }
     }
 
